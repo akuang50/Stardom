@@ -124,7 +124,10 @@ export function Concert() {
             setLive(result);
             setPlaying(true);
             if (song) playTrack(song.audioKey);
-            window.setTimeout(() => setPlaying(false), 9000);
+            window.setTimeout(() => {
+              stopTrack();
+              setPlaying(false);
+            }, 9000);
           }}
           className="rounded-full px-6 py-3 font-semibold text-white"
           style={{ background: group.color }}

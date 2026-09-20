@@ -35,7 +35,7 @@ export function MusicPlayer({
       <div>
         <p className="text-xs uppercase tracking-[0.2em] text-[var(--theme-secondary)]">{song.genre}</p>
         <h3 className="font-display text-3xl font-bold">{song.title}</h3>
-        <p className="mt-1 text-sm text-mist/60">{group.name} · original demo loop</p>
+        <p className="mt-1 text-sm text-mist/60">{group.name} · original demo stinger</p>
         <div className="mt-4">
           <Waveform playing={playing} color={group.color} />
         </div>

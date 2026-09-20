@@ -82,8 +82,8 @@ export function playTrack(audioKey: string): { ok: boolean; error?: string } {
     current = new Howl({
       src: [assetUrl(`music/${audioKey}.wav`)],
       html5: true,
-      loop: true,
-      volume: 0.7,
+      loop: false,
+      volume: 0.55,
       onloaderror: () => {
         current = null;
       },

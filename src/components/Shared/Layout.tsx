@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { NavLink, useLocation } from "react-router-dom";
-import { Sparkles } from "lucide-react";
+import { Sparkles, VolumeX } from "lucide-react";
 import { resolvePalette } from "../../data/palettes";
 import { paletteStyle } from "../../lib/theme";
+import { stopTrack } from "../../engine/musicEngine";
 import { useGameStore } from "../../store/gameStore";
 import { GroupLogo } from "./GroupLogo";
 import { Starfield } from "./Starfield";
@@ -24,6 +26,10 @@ export function Layout({ children }: { children: ReactNode }) {
   const group = useGameStore((state) => state.group);
   const draftPaletteId = useGameStore((state) => state.draftPaletteId);
   const palette = resolvePalette(draftPaletteId ?? group?.paletteId);
+
+  useEffect(() => {
+    stopTrack();
+  }, [location.pathname]);
 
   return (
     <div
@@ -66,9 +72,22 @@ export function Layout({ children }: { children: ReactNode }) {
               </NavLink>
             ))}
           </nav>
-          <p className="hidden text-xs uppercase tracking-[0.18em] text-mist/50 sm:block">
-            {group ? group.name : "No group yet"}
-          </p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => stopTrack()}
+              className="rounded-full border border-white/15 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-mist/70 hover:text-white"
+              aria-label="Mute audio"
+            >
+              <span className="inline-flex items-center gap-1">
+                <VolumeX size={14} />
+                Mute
+              </span>
+            </button>
+            <p className="hidden text-xs uppercase tracking-[0.18em] text-mist/50 sm:block">
+              {group ? group.name : "No group yet"}
+            </p>
+          </div>
         </header>
         <div className="mt-4 md:hidden">
           <div className="flex gap-2 overflow-x-auto pb-2 text-sm">
