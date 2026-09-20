@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+  <rect width="640" height="640" fill="#0b0614"/>
+  <path d="M0 420c80-90 160-90 240 0s160 90 240 0 160-90 240 0v220H0z" fill="#3b1060"/>
+  <circle cx="320" cy="220" r="110" fill="#12081d" stroke="#9b6dff" stroke-width="8"/>
+  <text x="56" y="560" font-family="Arial Black, sans-serif" font-size="56" fill="#c9a2ff">MIDNIGHT</text>
+</svg>

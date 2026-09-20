@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+  <rect width="640" height="640" fill="#2a1708"/>
+  <circle cx="500" cy="120" r="90" fill="#f4c45a"/>
+  <circle cx="140" cy="480" r="160" fill="#ff8a4c" opacity="0.7"/>
+  <text x="48" y="240" font-family="Arial Black, sans-serif" font-size="80" fill="#fff4d6">SUN</text>
+  <text x="48" y="320" font-family="Arial Black, sans-serif" font-size="80" fill="#fff4d6">SPILL</text>
+</svg>
