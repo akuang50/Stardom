@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { CareerFeed } from "../components/Career/CareerFeed";
+import { CareerTimeline } from "../components/Career/CareerTimeline";
+import { SocialFeed } from "../components/Career/SocialFeed";
 import { useGameStore } from "../store/gameStore";
 
 export function Career() {
@@ -8,6 +9,7 @@ export function Career() {
   const fans = useGameStore((state) => state.fans);
   const money = useGameStore((state) => state.money);
   const careerLog = useGameStore((state) => state.careerLog);
+  const songs = useGameStore((state) => state.songs);
   const advanceWeek = useGameStore((state) => state.advanceWeek);
 
   if (!group) {
@@ -23,15 +25,22 @@ export function Career() {
   }
 
   return (
-    <div className="grid gap-8">
-      <header>
-        <p className="text-xs uppercase tracking-[0.22em] text-gold">Career simulation</p>
-        <h1 className="font-display mt-2 text-5xl font-extrabold">{group.name} era</h1>
-        <p className="mt-3 max-w-2xl text-mist/70">
-          Advance the calendar. Releases, variety clips, and fandom weather all live in localStorage.
-        </p>
-      </header>
-      <CareerFeed week={week} fans={fans} money={money} log={careerLog} onAdvance={advanceWeek} />
+    <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+      <div>
+        <header className="mb-6">
+          <p className="text-xs uppercase tracking-[0.22em] text-gold">Career archive</p>
+          <h1 className="font-display mt-2 text-5xl font-extrabold">The {group.name} archive</h1>
+          <p className="mt-3 max-w-2xl text-mist/70">
+            A visual timeline of debuts, wins, and tours. Advance the calendar — everything stays in this browser.
+          </p>
+        </header>
+        <CareerTimeline week={week} fans={fans} money={money} log={careerLog} onAdvance={advanceWeek} />
+      </div>
+      <div>
+        <p className="text-xs uppercase tracking-[0.22em] text-[var(--theme-accent)]">Teaser campaign</p>
+        <h2 className="font-display mt-1 mb-4 text-3xl font-bold">The feed is alive</h2>
+        <SocialFeed group={group} song={songs.at(-1)} />
+      </div>
     </div>
   );
 }

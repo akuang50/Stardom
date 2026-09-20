@@ -1,18 +1,22 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { LineDistribution } from "../components/LineDistribution/LineDistribution";
 import { MusicPlayer } from "../components/MusicPlayer/MusicPlayer";
 import { DirectorPanel } from "../components/Shared/DirectorPanel";
+import { PerformanceStage } from "../components/Shared/PerformanceStage";
 import { SongCreatorForm } from "../components/SongCreator/SongCreatorForm";
+import { Storyboard } from "../components/SongCreator/Storyboard";
 import { conceptsById } from "../data/concepts";
 import { resolveMembers } from "../engine/gameEngine";
 import { scoreSong } from "../engine/musicEngine";
+import { resolveLook } from "../types/look";
 import { useGameStore } from "../store/gameStore";
 
 export function SongStudio() {
   const group = useGameStore((state) => state.group);
   const memberIds = useGameStore((state) => state.memberIds);
   const songs = useGameStore((state) => state.songs);
+  const looks = useGameStore((state) => state.looks);
   const addSong = useGameStore((state) => state.addSong);
   const setLineShare = useGameStore((state) => state.setLineShare);
   const updateSong = useGameStore((state) => state.updateSong);
@@ -20,9 +24,26 @@ export function SongStudio() {
   const members = resolveMembers(memberIds);
   const [draftTitle, setDraftTitle] = useState("NEON HEART");
   const [draftConcept, setDraftConcept] = useState(group?.concept ?? "neon");
+  const [playing, setPlaying] = useState(false);
+  const [activeId, setActiveId] = useState(members[0]?.id);
 
   const song = songs.at(-1);
   const quality = useMemo(() => (song ? scoreSong(song, members) : 0), [song, members]);
+  const resolvedLooks = useMemo(
+    () => Object.fromEntries(members.map((member) => [member.id, resolveLook(member.id, looks[member.id])])),
+    [members, looks],
+  );
+
+  useEffect(() => {
+    if (!playing || members.length === 0) return;
+    const timer = window.setInterval(() => {
+      setActiveId((current) => {
+        const index = members.findIndex((member) => member.id === current);
+        return members[(index + 1) % members.length]?.id;
+      });
+    }, 1600);
+    return () => window.clearInterval(timer);
+  }, [playing, members]);
 
   if (!group) {
     return (
@@ -73,12 +94,21 @@ export function SongStudio() {
         </button>
       ) : (
         <>
-          <MusicPlayer song={song} />
+          <MusicPlayer song={song} group={group} onPlayingChange={setPlaying} />
+          <PerformanceStage
+            group={group}
+            members={members}
+            looks={resolvedLooks}
+            activeId={activeId}
+            playing={playing}
+          />
           <LineDistribution
             song={song}
             members={members}
+            playing={playing}
             onChange={(memberId, share) => setLineShare(song.id, memberId, share)}
           />
+          <Storyboard group={group} members={members} />
           <div className="glass flex flex-wrap items-center justify-between gap-3 rounded-3xl p-5">
             <p className="text-sm text-mist/70">
               Predicted quality <span className="font-display text-2xl text-white">{Math.round(quality)}</span>

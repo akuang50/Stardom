@@ -7,16 +7,22 @@ export function GroupCreatorForm({
   concept,
   fandomName,
   paletteId,
+  eraName,
+  slogan,
   onChange,
 }: {
   name: string;
   concept: string;
   fandomName: string;
   paletteId: string;
+  eraName: string;
+  slogan: string;
   onChange: (patch: {
     name?: string;
     concept?: string;
     fandomName?: string;
+    eraName?: string;
+    slogan?: string;
     palette?: GroupPalette;
   }) => void;
 }) {
@@ -31,13 +37,33 @@ export function GroupCreatorForm({
           className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 font-display text-xl outline-none focus:border-[var(--theme-accent)]"
         />
       </label>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="grid gap-2 text-sm">
+          Fandom name
+          <input
+            value={fandomName}
+            onChange={(event) => onChange({ fandomName: event.target.value })}
+            placeholder="NXLIGHT"
+            className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-[var(--theme-secondary)]"
+          />
+        </label>
+        <label className="grid gap-2 text-sm">
+          Era name
+          <input
+            value={eraName}
+            onChange={(event) => onChange({ eraName: event.target.value })}
+            placeholder="DEBUT ERA"
+            className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-[var(--theme-secondary)]"
+          />
+        </label>
+      </div>
       <label className="grid gap-2 text-sm">
-        Fandom name
+        Slogan
         <input
-          value={fandomName}
-          onChange={(event) => onChange({ fandomName: event.target.value })}
-          placeholder="NXLIGHT"
-          className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-[var(--theme-secondary)]"
+          value={slogan}
+          onChange={(event) => onChange({ slogan: event.target.value })}
+          placeholder="We were always stars."
+          className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-[var(--theme-accent)]"
         />
       </label>
       <div className="grid gap-2 text-sm">

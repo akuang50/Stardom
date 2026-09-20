@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import type { MemberLook } from "../../types/look";
 import type { Member } from "../../types/member";
 import { CharacterPortrait } from "./CharacterPortrait";
 import { MemberStats } from "./StatBar";
@@ -7,10 +8,12 @@ export function MemberCard({
   member,
   selected = false,
   onToggle,
+  look,
 }: {
   member: Member;
   selected?: boolean;
   onToggle?: () => void;
+  look?: Partial<MemberLook>;
 }) {
   const className = `photocard w-full overflow-hidden rounded-3xl border p-4 text-left transition ${
     selected ? "border-[var(--theme-accent)] shadow-[0_0_0_1px_var(--theme-accent)]" : "border-white/10"
@@ -25,7 +28,7 @@ export function MemberCard({
         <span className="rounded-full bg-black/35 px-2 py-1 text-xs">{member.nationality}</span>
       </div>
       <div className="mt-5 aspect-[5/6] overflow-hidden rounded-2xl">
-        <CharacterPortrait member={member} />
+        <CharacterPortrait member={member} look={look} />
       </div>
       <p className="mt-4 line-clamp-2 text-sm text-white/70">{member.bio}</p>
       <div className="mt-4">

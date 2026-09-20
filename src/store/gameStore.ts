@@ -4,12 +4,14 @@ import { neonixMemberIds } from "../data/characters";
 import { catalogSongs } from "../data/songs";
 import { parseDirectorCommand } from "../ai/parser";
 import { createGroupDraft, resolveMembers } from "../engine/gameEngine";
-import { remixFromExplore } from "../engine/remixEngine";
+import { remixFromExplore, visualForConcept } from "../engine/remixEngine";
 import { simulateRelease, simulateWeek } from "../engine/careerEngine";
 import { createSong, evenLines, setMemberShare } from "../engine/musicEngine";
 import type { GameSnapshot } from "../types/game";
 import type { Group } from "../types/group";
 import type { Song } from "../types/song";
+import type { MemberLook } from "../types/look";
+import { resolveLook } from "../types/look";
 
 const emptyState: GameSnapshot = {
   group: null,
@@ -24,17 +26,11 @@ const emptyState: GameSnapshot = {
     directorOffline: true,
   },
   demoMode: false,
+  looks: {},
 };
 
 interface GameStore extends GameSnapshot {
-  createGroup: (input: {
-    name: string;
-    concept: string;
-    fandomName: string;
-    color: string;
-    paletteId: string;
-    memberIds: string[];
-  }) => void;
+  createGroup: (input: Parameters<typeof createGroupDraft>[0]) => void;
   updateGroup: (patch: Partial<Group>) => void;
   setMemberIds: (memberIds: string[]) => void;
   addSong: (title: string, concept?: string) => string | null;
@@ -48,6 +44,7 @@ interface GameStore extends GameSnapshot {
   reset: () => void;
   draftPaletteId: string | null;
   setDraftPalette: (id: string | null) => void;
+  setLook: (id: string, patch: Partial<MemberLook>) => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -177,7 +174,7 @@ export const useGameStore = create<GameStore>()(
         switch (command.action) {
           case "change_concept":
             if (state.group) {
-              get().updateGroup({ concept: command.concept });
+              get().updateGroup({ concept: command.concept, ...visualForConcept(command.concept) });
               if (latest && !latest.released) {
                 const song = createSong({
                   title: latest.title,
@@ -223,6 +220,8 @@ export const useGameStore = create<GameStore>()(
           memberIds: [...neonixMemberIds],
         });
         group.debuted = true;
+        group.eraName = "AFTERGLOW ERA";
+        group.slogan = "Stay in the light.";
 
         const debut = createSong({
           title: catalogSongs[0].title,
@@ -279,15 +278,27 @@ export const useGameStore = create<GameStore>()(
 
       reset: () => set({ ...emptyState, draftPaletteId: null }),
       setDraftPalette: (id) => set({ draftPaletteId: id }),
+      setLook: (id, patch) => {
+        const current = get().looks[id] ?? resolveLook(id);
+        set({ looks: { ...get().looks, [id]: { ...current, ...patch } } });
+      },
     }),
     {
       name: "stardom-save",
-      version: 2,
+      version: 3,
       migrate: (persisted) => {
-        const state = persisted as { group?: { paletteId?: string; color?: string } };
-        if (state.group && !state.group.paletteId) {
-          state.group.paletteId = "ink-pink";
+        const state = persisted as { group?: Record<string, unknown>; looks?: Record<string, MemberLook> };
+        if (state.group) {
+          state.group.paletteId ??= "ink-pink";
+          state.group.eraName ??= "DEBUT ERA";
+          state.group.slogan ??= "We were always stars.";
+          state.group.logoStyle ??= "futuristic";
+          state.group.logoSymbol ??= "star";
+          state.group.lightstick ??= "orb";
+          state.group.lighting ??= "laser";
+          state.group.led ??= "grid";
         }
+        state.looks ??= {};
         return persisted;
       },
       partialize: (state) => ({
@@ -300,6 +311,7 @@ export const useGameStore = create<GameStore>()(
         careerLog: state.careerLog,
         settings: state.settings,
         demoMode: state.demoMode,
+        looks: state.looks,
       }),
     },
   ),

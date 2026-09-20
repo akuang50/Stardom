@@ -1,11 +1,21 @@
 import { Link } from "react-router-dom";
+import { ConceptBoard } from "../components/GroupCreator/ConceptBoard";
+import { LogoStudio } from "../components/GroupCreator/LogoStudio";
 import { PalettePicker } from "../components/GroupCreator/PalettePicker";
 import { DirectorPanel } from "../components/Shared/DirectorPanel";
-import { MemberCard } from "../components/Shared/MemberCard";
+import { AlbumArt } from "../components/Shared/AlbumArt";
+import { GroupLogo } from "../components/Shared/GroupLogo";
+import { Lightstick } from "../components/Shared/Lightstick";
+import { Photocard } from "../components/Shared/Photocard";
+import { StageDesigner } from "../components/Shared/StageDesigner";
 import { chemistryBonus, roleBalanceLabel } from "../engine/chemistryEngine";
 import { resolveMembers } from "../engine/gameEngine";
 import { formatMoney, formatNumber } from "../lib/utils";
+import type { LightstickShape } from "../types/look";
+import { resolveLook } from "../types/look";
 import { useGameStore } from "../store/gameStore";
+
+const stickShapes: LightstickShape[] = ["orb", "crown", "crystal"];
 
 export function Group() {
   const group = useGameStore((state) => state.group);
@@ -15,6 +25,7 @@ export function Group() {
   const money = useGameStore((state) => state.money);
   const week = useGameStore((state) => state.week);
   const demoMode = useGameStore((state) => state.demoMode);
+  const looks = useGameStore((state) => state.looks);
   const updateGroup = useGameStore((state) => state.updateGroup);
   const members = resolveMembers(memberIds);
 
@@ -29,22 +40,27 @@ export function Group() {
   }
 
   return (
-    <div className="grid gap-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          {demoMode ? (
-            <p className="text-xs uppercase tracking-[0.22em] text-gold">Demo Mode · NEONIX</p>
-          ) : (
-            <p className="text-xs uppercase tracking-[0.22em] text-cyan">Active group</p>
-          )}
-          <h1 className="font-display mt-2 text-6xl font-extrabold" style={{ color: group.color }}>
-            {group.name}
-          </h1>
-          <p className="mt-2 text-mist/70">
-            Fandom {group.fandomName} · {group.concept} · {group.debuted ? "Debuted" : "Pre-debut"} · {roleBalanceLabel(members)}
-          </p>
+    <div className="grid gap-10">
+      <header
+        className="relative overflow-hidden rounded-[2rem] border border-white/10 p-8"
+        style={{ background: `linear-gradient(135deg, ${group.color}55, #07040f 62%)` }}
+      >
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            {demoMode ? (
+              <p className="text-xs uppercase tracking-[0.22em] text-gold">Demo Mode · NEONIX</p>
+            ) : (
+              <p className="text-xs uppercase tracking-[0.22em] text-white/70">Active group</p>
+            )}
+            <h1 className="font-display mt-2 text-6xl font-extrabold text-white">{group.name}</h1>
+            <p className="mt-2 text-lg text-white/80">{group.eraName}</p>
+            <p className="mt-2 text-sm text-white/65">
+              {members.length} members · {songs.length} {songs.length === 1 ? "album" : "albums"} · {formatNumber(fans)} fans
+            </p>
+          </div>
+          <GroupLogo group={group} size={132} />
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-6 flex flex-wrap gap-2">
           <Link to="/song" className="rounded-full bg-white px-5 py-3 font-semibold text-ink">
             Song studio
           </Link>
@@ -59,6 +75,31 @@ export function Group() {
         <Mini label="Cash" value={formatMoney(money)} />
         <Mini label="Chemistry" value={`${chemistryBonus(members)}`} />
       </div>
+      <ConceptBoard group={group} />
+      <LogoStudio group={group} onChange={updateGroup} />
+      <section className="glass grid gap-6 rounded-3xl p-6 md:grid-cols-[160px_1fr]">
+        <Lightstick color={group.color} shape={group.lightstick} />
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--theme-secondary)]">Fandom</p>
+          <h2 className="font-display mt-1 text-3xl font-bold">{group.fandomName}</h2>
+          <p className="mt-2 text-mist/70">{group.slogan}</p>
+          <p className="mt-2 text-sm text-mist/55">{formatNumber(fans)} lights in the pit · {roleBalanceLabel(members)}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {stickShapes.map((shape) => (
+              <button
+                key={shape}
+                type="button"
+                onClick={() => updateGroup({ lightstick: shape })}
+                className={`rounded-full px-3 py-1.5 text-sm capitalize ${
+                  group.lightstick === shape ? "bg-white text-ink" : "bg-white/10"
+                }`}
+              >
+                {shape}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
       <section className="glass rounded-3xl p-6">
         <PalettePicker
           value={group.paletteId}
@@ -66,10 +107,10 @@ export function Group() {
         />
       </section>
       <section>
-        <h2 className="font-display text-2xl font-bold">Members</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <h2 className="font-display text-2xl font-bold">Photocards</h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {members.map((member) => (
-            <MemberCard key={member.id} member={member} selected />
+            <Photocard key={member.id} member={member} group={group} look={looks[member.id] ?? resolveLook(member.id)} />
           ))}
         </div>
       </section>
@@ -78,24 +119,22 @@ export function Group() {
         {songs.length === 0 ? (
           <p className="mt-3 text-mist/60">No title track yet. Open the studio.</p>
         ) : (
-          <ul className="mt-3 grid gap-3">
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {songs.map((song) => (
-              <li key={song.id} className="glass flex items-center justify-between rounded-2xl p-4">
-                <div>
+              <Link key={song.id} to="/song" className="overflow-hidden rounded-3xl border border-white/10">
+                <AlbumArt song={song} group={group} className="aspect-square w-full" />
+                <div className="p-3">
                   <p className="font-display text-xl font-bold">{song.title}</p>
-                  <p className="text-sm text-mist/60">
-                    {song.genre}
-                    {song.released ? ` · Peak #${song.chartPeak} · ${formatNumber(song.streams)} streams` : " · Unreleased"}
+                  <p className="text-xs text-mist/60">
+                    {song.released ? `Peak #${song.chartPeak} · ${formatNumber(song.streams)}` : "Unreleased"}
                   </p>
                 </div>
-                <Link to="/song" className="text-sm text-cyan">
-                  Open
-                </Link>
-              </li>
+              </Link>
             ))}
-          </ul>
+          </div>
         )}
       </section>
+      <StageDesigner group={group} onChange={updateGroup} />
       <DirectorPanel />
     </div>
   );

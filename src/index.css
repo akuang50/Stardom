@@ -73,3 +73,29 @@ body {
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 30%),
     radial-gradient(circle at 30% 20%, color-mix(in oklab, var(--member-color) 55%, black), #0b0614 72%);
 }
+
+@keyframes wave {
+  from {
+    transform: scaleY(0.35);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateY(0) scale(1);
+  }
+  to {
+    transform: translateY(-18px) scale(1.04);
+  }
+}
+
+.hero-orb {
+  animation: drift 7s ease-in-out infinite alternate;
+}
+
+.glow-ring {
+  box-shadow: 0 0 80px color-mix(in oklab, var(--theme-accent, #ff2d95) 45%, transparent);
+}

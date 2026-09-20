@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 import { NavLink, useLocation } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { resolvePalette } from "../../data/palettes";
 import { paletteStyle } from "../../lib/theme";
 import { useGameStore } from "../../store/gameStore";
+import { GroupLogo } from "./GroupLogo";
 import { Starfield } from "./Starfield";
 import { OfflineBanner } from "./OfflineBanner";
 
@@ -28,12 +30,24 @@ export function Layout({ children }: { children: ReactNode }) {
       style={paletteStyle(palette)}
     >
       <Starfield />
+      <motion.div
+        key={palette.id}
+        initial={{ opacity: 0.35 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 0.7 }}
+        className="pointer-events-none absolute inset-0 z-20"
+        style={{ background: palette.accent }}
+      />
       <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-5 pb-16 pt-6 sm:px-8">
         <header className="flex items-center justify-between gap-4">
           <NavLink to="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--theme-accent)]/20 text-[var(--theme-accent)]">
-              <Sparkles size={16} />
-            </span>
+            {group ? (
+              <GroupLogo group={group} size={36} />
+            ) : (
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--theme-accent)]/20 text-[var(--theme-accent)]">
+                <Sparkles size={16} />
+              </span>
+            )}
             <span className="font-display text-xl font-extrabold tracking-[0.22em]">STARDOM</span>
           </NavLink>
           <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 py-1 text-sm md:flex">

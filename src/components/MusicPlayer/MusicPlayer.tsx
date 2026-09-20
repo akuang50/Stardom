@@ -1,10 +1,20 @@
 import { Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { isPlaying, playTrack, stopTrack } from "../../engine/musicEngine";
-import { assetUrl } from "../../lib/utils";
+import type { Group } from "../../types/group";
 import type { Song } from "../../types/song";
+import { AlbumArt } from "../Shared/AlbumArt";
+import { Waveform } from "./Waveform";
 
-export function MusicPlayer({ song }: { song: Song }) {
+export function MusicPlayer({
+  song,
+  group,
+  onPlayingChange,
+}: {
+  song: Song;
+  group: Group;
+  onPlayingChange?: (playing: boolean) => void;
+}) {
   const [playing, setPlaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,37 +22,45 @@ export function MusicPlayer({ song }: { song: Song }) {
     return () => stopTrack();
   }, []);
 
+  const setPlay = (next: boolean) => {
+    setPlaying(next);
+    onPlayingChange?.(next);
+  };
+
   return (
-    <section className="glass flex flex-col gap-4 rounded-3xl p-6 sm:flex-row sm:items-center">
-      <img
-        src={assetUrl(`assets/${song.artwork}`)}
-        alt={`${song.title} artwork`}
-        className="h-32 w-32 rounded-2xl object-cover"
-      />
-      <div className="flex-1">
-        <p className="text-xs uppercase tracking-[0.2em] text-cyan">{song.genre}</p>
+    <section className="glass grid gap-5 rounded-3xl p-6 md:grid-cols-[220px_1fr_auto] md:items-center">
+      <div className="overflow-hidden rounded-3xl glow-ring">
+        <AlbumArt song={song} group={group} className="aspect-square w-full" />
+      </div>
+      <div>
+        <p className="text-xs uppercase tracking-[0.2em] text-[var(--theme-secondary)]">{song.genre}</p>
         <h3 className="font-display text-3xl font-bold">{song.title}</h3>
-        <p className="mt-1 text-sm text-mist/60">Demo loop · licensed original stinger</p>
-        {error ? <p className="mt-2 text-sm text-gold">{error} Preview skipped — the rest of the studio still works.</p> : null}
+        <p className="mt-1 text-sm text-mist/60">{group.name} · original demo loop</p>
+        <div className="mt-4">
+          <Waveform playing={playing} color={group.color} />
+        </div>
+        {error ? (
+          <p className="mt-2 text-sm text-gold">{error} Preview skipped — the rest of the studio still works.</p>
+        ) : null}
       </div>
       <button
         type="button"
-        className="grid h-14 w-14 place-items-center rounded-full bg-white text-ink"
+        className="grid h-16 w-16 place-items-center rounded-full bg-white text-ink"
         onClick={() => {
           if (playing) {
             stopTrack();
-            setPlaying(false);
+            setPlay(false);
             return;
           }
           const result = playTrack(song.audioKey);
           if (!result.ok) {
             setError(result.error ?? "Audio unavailable.");
-            setPlaying(false);
+            setPlay(false);
             return;
           }
           setError(null);
-          setPlaying(true);
-          window.setTimeout(() => setPlaying(isPlaying()), 200);
+          setPlay(true);
+          window.setTimeout(() => setPlay(isPlaying()), 200);
         }}
         aria-label={playing ? "Pause preview" : "Play preview"}
       >

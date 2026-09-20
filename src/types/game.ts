@@ -16,6 +16,8 @@ export interface GameSettings {
   directorOffline: boolean;
 }
 
+import type { MemberLook } from "./look";
+
 export interface GameSnapshot {
   group: Group | null;
   memberIds: string[];
@@ -26,6 +28,7 @@ export interface GameSnapshot {
   careerLog: CareerLogEntry[];
   settings: GameSettings;
   demoMode: boolean;
+  looks: Record<string, MemberLook>;
 }
 
 export type { Group, Member, Song };

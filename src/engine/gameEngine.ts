@@ -3,6 +3,7 @@ import { defaultPaletteId } from "../data/palettes";
 import type { Member } from "../types/member";
 import { uid } from "../lib/utils";
 import type { Group } from "../types/group";
+import type { LedMode, LightingMode, LightstickShape, LogoStyle, LogoSymbol } from "../types/look";
 
 export function createGroupDraft(partial: {
   name: string;
@@ -11,6 +12,13 @@ export function createGroupDraft(partial: {
   color: string;
   paletteId?: string;
   memberIds: string[];
+  eraName?: string;
+  slogan?: string;
+  logoStyle?: LogoStyle;
+  logoSymbol?: LogoSymbol;
+  lightstick?: LightstickShape;
+  lighting?: LightingMode;
+  led?: LedMode;
 }): Group {
   return {
     id: uid("group"),
@@ -21,6 +29,13 @@ export function createGroupDraft(partial: {
     paletteId: partial.paletteId ?? defaultPaletteId,
     memberIds: partial.memberIds,
     debuted: false,
+    eraName: partial.eraName ?? "DEBUT ERA",
+    slogan: partial.slogan ?? "We were always stars.",
+    logoStyle: partial.logoStyle ?? "futuristic",
+    logoSymbol: partial.logoSymbol ?? "star",
+    lightstick: partial.lightstick ?? "orb",
+    lighting: partial.lighting ?? (partial.concept === "summer" ? "sun" : partial.concept === "dark" ? "spot" : "laser"),
+    led: partial.led ?? "grid",
   };
 }
 

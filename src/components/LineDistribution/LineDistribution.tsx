@@ -5,10 +5,12 @@ export function LineDistribution({
   song,
   members,
   onChange,
+  playing = false,
 }: {
   song: Song;
   members: Member[];
   onChange: (memberId: string, share: number) => void;
+  playing?: boolean;
 }) {
   return (
     <section className="glass rounded-3xl p-6">
@@ -20,7 +22,7 @@ export function LineDistribution({
           return (
             <label key={member.id} className="grid gap-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="font-semibold">{member.name}</span>
+                <span className="font-semibold tracking-[0.12em] uppercase">{member.name}</span>
                 <span className="text-mist/60">{share.toFixed(0)}%</span>
               </div>
               <input
@@ -31,10 +33,15 @@ export function LineDistribution({
                 onChange={(event) => onChange(member.id, Number(event.target.value))}
                 className="accent-pink"
               />
-              <div className="h-2 overflow-hidden rounded-full bg-white/10">
+              <div className="h-3 overflow-hidden rounded-full bg-white/10">
                 <div
-                  className="h-full"
-                  style={{ width: `${share}%`, background: member.color }}
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${share}%`,
+                    background: member.color,
+                    boxShadow: playing ? `0 0 16px ${member.color}` : undefined,
+                    transition: "width 0.4s ease, box-shadow 0.3s ease",
+                  }}
                 />
               </div>
             </label>
