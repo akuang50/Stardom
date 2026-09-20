@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Disc3, Sparkles, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { CharacterPortrait } from "../components/Shared/CharacterPortrait";
+import { charactersById, neonixMemberIds } from "../data/characters";
 import { useGameStore } from "../store/gameStore";
 
 export function Home() {
@@ -64,6 +66,16 @@ export function Home() {
         <Feature icon={<Users size={18} />} title="Create groups" copy="Name the unit, pick a concept, cast 4–7 trainees." />
         <Feature icon={<Disc3 size={18} />} title="Make songs" copy="Title tracks, line splits, and a local demo preview." />
         <Feature icon={<Sparkles size={18} />} title="Build a career" copy="Releases, charts, fans, and a timeline that persists." />
+        <div className="grid grid-cols-5 gap-2 pt-2">
+          {neonixMemberIds.map((id) => {
+            const member = charactersById[id];
+            return member ? (
+              <div key={id} className="overflow-hidden rounded-2xl border border-white/10">
+                <CharacterPortrait member={member} />
+              </div>
+            ) : null;
+          })}
+        </div>
       </div>
     </div>
   );

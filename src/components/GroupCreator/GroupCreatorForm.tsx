@@ -1,17 +1,24 @@
 import { concepts } from "../../data/concepts";
+import type { GroupPalette } from "../../data/palettes";
+import { PalettePicker } from "./PalettePicker";
 
 export function GroupCreatorForm({
   name,
   concept,
   fandomName,
-  color,
+  paletteId,
   onChange,
 }: {
   name: string;
   concept: string;
   fandomName: string;
-  color: string;
-  onChange: (patch: { name?: string; concept?: string; fandomName?: string; color?: string }) => void;
+  paletteId: string;
+  onChange: (patch: {
+    name?: string;
+    concept?: string;
+    fandomName?: string;
+    palette?: GroupPalette;
+  }) => void;
 }) {
   return (
     <div className="glass grid gap-4 rounded-3xl p-6">
@@ -21,7 +28,7 @@ export function GroupCreatorForm({
           value={name}
           onChange={(event) => onChange({ name: event.target.value })}
           placeholder="NEONIX"
-          className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 font-display text-xl outline-none focus:border-pink"
+          className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 font-display text-xl outline-none focus:border-[var(--theme-accent)]"
         />
       </label>
       <label className="grid gap-2 text-sm">
@@ -30,7 +37,7 @@ export function GroupCreatorForm({
           value={fandomName}
           onChange={(event) => onChange({ fandomName: event.target.value })}
           placeholder="NXLIGHT"
-          className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-cyan"
+          className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-[var(--theme-secondary)]"
         />
       </label>
       <div className="grid gap-2 text-sm">
@@ -42,7 +49,7 @@ export function GroupCreatorForm({
               type="button"
               onClick={() => onChange({ concept: item.id })}
               className={`rounded-2xl border px-4 py-3 text-left ${
-                concept === item.id ? "border-pink bg-pink/10" : "border-white/10 bg-black/20"
+                concept === item.id ? "border-[var(--theme-accent)] bg-white/10" : "border-white/10 bg-black/20"
               }`}
             >
               <p className="font-semibold">{item.name}</p>
@@ -51,15 +58,7 @@ export function GroupCreatorForm({
           ))}
         </div>
       </div>
-      <label className="grid gap-2 text-sm">
-        Official color
-        <input
-          type="color"
-          value={color}
-          onChange={(event) => onChange({ color: event.target.value })}
-          className="h-12 w-24 cursor-pointer rounded-xl border-0 bg-transparent"
-        />
-      </label>
+      <PalettePicker value={paletteId} onChange={(palette) => onChange({ palette })} />
     </div>
   );
 }

@@ -4,6 +4,7 @@ export interface Group {
   concept: string;
   fandomName: string;
   color: string;
+  paletteId: string;
   memberIds: string[];
   debuted: boolean;
 }

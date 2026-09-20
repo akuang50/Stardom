@@ -1,4 +1,5 @@
 import { charactersById } from "../data/characters";
+import { defaultPaletteId } from "../data/palettes";
 import type { Member } from "../types/member";
 import { uid } from "../lib/utils";
 import type { Group } from "../types/group";
@@ -8,6 +9,7 @@ export function createGroupDraft(partial: {
   concept: string;
   fandomName: string;
   color: string;
+  paletteId?: string;
   memberIds: string[];
 }): Group {
   return {
@@ -16,6 +18,7 @@ export function createGroupDraft(partial: {
     concept: partial.concept,
     fandomName: partial.fandomName.trim() || "STARS",
     color: partial.color,
+    paletteId: partial.paletteId ?? defaultPaletteId,
     memberIds: partial.memberIds,
     debuted: false,
   };

@@ -17,8 +17,8 @@ Judges can open the GitHub Pages URL and play immediately. No `npm install`, API
 
 ## Features
 
-- **Group creation** — name, concept, fandom, official color
-- **Character roster** — 14 fictional trainees with vocal / dance / rap / visual stats
+- **Group creation** — name, concept, fandom, and color schemes (including pastels)
+- **Character roster** — 14 fictional trainees with original illustrated photocards
 - **Song studio** — title tracks, concept palettes, line distribution
 - **Release simulation** — quality, streams, chart peak, fan and cash deltas
 - **Career calendar** — week-by-week events stored in the browser
@@ -128,7 +128,27 @@ node scripts/generate-demo-audio.mjs
 
 ## Credits
 
-STARDOM is a fictional K-pop agency simulator. All trainees, groups, and songs are original.
+STARDOM is a fictional K-pop agency simulator. All trainees, groups, songs, portraits, and demo audio are original.
+
+Color schemes borrow **public color moods** associated with well-known K-pop visual eras. They are not official palettes, logos, or partnerships.
+
+## Copyright — what to avoid
+
+Safe in this repo:
+
+- Original characters, names, songs, and SVG portraits
+- Original synthesized demo audio
+- Color combinations inspired by a public aesthetic (pink/black, candy pastels, denim/cream)
+
+Do **not** add later unless you have a license:
+
+- Real idol photos, fancams, press shots, or AI images that look like a specific person
+- Official logos, lightsticks, album covers, or music videos
+- Commercial recordings or lyrics
+- Agency marks (HYBE, SM, JYP, YG, etc.)
+- Fandom names or group names used as if this were an official product
+
+Colors themselves are not copyrighted. Likenesses, logos, photos, and recordings are.
 
 ## License
 

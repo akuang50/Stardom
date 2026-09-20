@@ -20,14 +20,14 @@ body,
 
 body {
   margin: 0;
-  background: var(--color-ink);
-  color: var(--color-mist);
+  background: var(--theme-ink, var(--color-ink));
+  color: var(--theme-mist, var(--color-mist));
   font-family: var(--font-sans);
 }
 
 ::selection {
-  background: #ff2d95;
-  color: #14010a;
+  background: var(--theme-accent, #ff2d95);
+  color: var(--theme-ink, #14010a);
 }
 
 .font-display {
@@ -35,18 +35,32 @@ body {
 }
 
 .stage-bg {
+  color: var(--theme-mist, var(--color-mist));
   background:
-    radial-gradient(900px 420px at 12% -10%, rgba(255, 45, 149, 0.22), transparent 55%),
-    radial-gradient(700px 380px at 92% 8%, rgba(60, 239, 255, 0.12), transparent 50%),
-    radial-gradient(800px 500px at 50% 120%, rgba(155, 109, 255, 0.16), transparent 55%),
-    #07040f;
+    radial-gradient(900px 420px at 12% -10%, color-mix(in oklab, var(--theme-glow, #ff2d95) 28%, transparent), transparent 55%),
+    radial-gradient(700px 380px at 92% 8%, color-mix(in oklab, var(--theme-secondary, #3cefff) 18%, transparent), transparent 50%),
+    radial-gradient(800px 500px at 50% 120%, color-mix(in oklab, var(--theme-accent, #9b6dff) 16%, transparent), transparent 55%),
+    var(--theme-ink, #07040f);
 }
 
 .glass {
-  background: rgba(10, 6, 18, 0.62);
-  border: 1px solid rgba(239, 231, 255, 0.12);
-  box-shadow: 0 0 0 1px rgba(255, 45, 149, 0.04), 0 24px 60px rgba(0, 0, 0, 0.35);
+  background: color-mix(in oklab, var(--theme-ink, #0a0612) 62%, transparent);
+  border: 1px solid color-mix(in oklab, var(--theme-mist, #efe7ff) 16%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--theme-accent, #ff2d95) 8%, transparent), 0 24px 60px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(18px);
+}
+
+.theme-pastel .glass {
+  background: color-mix(in oklab, white 70%, var(--theme-ink, #fff) 30%);
+}
+
+.theme-pastel .photocard {
+  color: #fff;
+}
+
+.theme-pastel input:not([type="range"]):not([type="color"]) {
+  background: #fff;
+  color: var(--theme-mist, #4a3350);
 }
 
 .hairline {

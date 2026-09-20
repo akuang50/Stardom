@@ -32,6 +32,7 @@ interface GameStore extends GameSnapshot {
     concept: string;
     fandomName: string;
     color: string;
+    paletteId: string;
     memberIds: string[];
   }) => void;
   updateGroup: (patch: Partial<Group>) => void;
@@ -45,12 +46,15 @@ interface GameStore extends GameSnapshot {
   applyDirector: (prompt: string) => string;
   loadDemo: () => void;
   reset: () => void;
+  draftPaletteId: string | null;
+  setDraftPalette: (id: string | null) => void;
 }
 
 export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
       ...emptyState,
+      draftPaletteId: null,
 
       createGroup: (input) => {
         const group = createGroupDraft(input);
@@ -215,6 +219,7 @@ export const useGameStore = create<GameStore>()(
           concept: "neon",
           fandomName: "NXLIGHT",
           color: "#ff2d95",
+          paletteId: "ink-pink",
           memberIds: [...neonixMemberIds],
         });
         group.debuted = true;
@@ -272,11 +277,19 @@ export const useGameStore = create<GameStore>()(
         });
       },
 
-      reset: () => set({ ...emptyState }),
+      reset: () => set({ ...emptyState, draftPaletteId: null }),
+      setDraftPalette: (id) => set({ draftPaletteId: id }),
     }),
     {
       name: "stardom-save",
-      version: 1,
+      version: 2,
+      migrate: (persisted) => {
+        const state = persisted as { group?: { paletteId?: string; color?: string } };
+        if (state.group && !state.group.paletteId) {
+          state.group.paletteId = "ink-pink";
+        }
+        return persisted;
+      },
       partialize: (state) => ({
         group: state.group,
         memberIds: state.memberIds,

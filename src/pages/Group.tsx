@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { MemberCard } from "../components/Shared/MemberCard";
+import { PalettePicker } from "../components/GroupCreator/PalettePicker";
 import { DirectorPanel } from "../components/Shared/DirectorPanel";
+import { MemberCard } from "../components/Shared/MemberCard";
 import { chemistryBonus, roleBalanceLabel } from "../engine/chemistryEngine";
 import { resolveMembers } from "../engine/gameEngine";
 import { formatMoney, formatNumber } from "../lib/utils";
@@ -14,6 +15,7 @@ export function Group() {
   const money = useGameStore((state) => state.money);
   const week = useGameStore((state) => state.week);
   const demoMode = useGameStore((state) => state.demoMode);
+  const updateGroup = useGameStore((state) => state.updateGroup);
   const members = resolveMembers(memberIds);
 
   if (!group) {
@@ -46,7 +48,7 @@ export function Group() {
           <Link to="/song" className="rounded-full bg-white px-5 py-3 font-semibold text-ink">
             Song studio
           </Link>
-          <Link to="/career" className="rounded-full bg-pink px-5 py-3 font-semibold text-white">
+          <Link to="/career" className="rounded-full px-5 py-3 font-semibold text-white" style={{ background: group.color }}>
             Career
           </Link>
         </div>
@@ -57,6 +59,12 @@ export function Group() {
         <Mini label="Cash" value={formatMoney(money)} />
         <Mini label="Chemistry" value={`${chemistryBonus(members)}`} />
       </div>
+      <section className="glass rounded-3xl p-6">
+        <PalettePicker
+          value={group.paletteId}
+          onChange={(palette) => updateGroup({ paletteId: palette.id, color: palette.accent })}
+        />
+      </section>
       <section>
         <h2 className="font-display text-2xl font-bold">Members</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

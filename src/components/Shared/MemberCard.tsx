@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import type { Member } from "../../types/member";
+import { CharacterPortrait } from "./CharacterPortrait";
 import { MemberStats } from "./StatBar";
 
 export function MemberCard({
@@ -12,7 +13,7 @@ export function MemberCard({
   onToggle?: () => void;
 }) {
   const className = `photocard w-full overflow-hidden rounded-3xl border p-4 text-left transition ${
-    selected ? "border-pink shadow-[0_0_0_1px_#ff2d95]" : "border-white/10"
+    selected ? "border-[var(--theme-accent)] shadow-[0_0_0_1px_var(--theme-accent)]" : "border-white/10"
   }`;
   const body = (
     <>
@@ -23,8 +24,8 @@ export function MemberCard({
         </div>
         <span className="rounded-full bg-black/35 px-2 py-1 text-xs">{member.nationality}</span>
       </div>
-      <div className="mt-5 grid h-28 place-items-center rounded-2xl bg-black/25 font-display text-5xl font-extrabold text-white/90">
-        {member.name.slice(0, 1)}
+      <div className="mt-5 aspect-[5/6] overflow-hidden rounded-2xl">
+        <CharacterPortrait member={member} />
       </div>
       <p className="mt-4 line-clamp-2 text-sm text-white/70">{member.bio}</p>
       <div className="mt-4">
