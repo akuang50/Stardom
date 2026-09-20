@@ -1,6 +1,65 @@
+import { useState } from "react";
+import { assetUrl } from "../../lib/utils";
 import type { HairCut, MemberLook, OutfitLook, StageStyle } from "../../types/look";
 import { resolveLook } from "../../types/look";
 import type { Member } from "../../types/member";
+
+export function memberPhoto(id: string): string {
+  return assetUrl(`characters/${id}.jpg`);
+}
+
+export function CharacterPortrait({
+  member,
+  look,
+  label = true,
+}: {
+  member: Member;
+  look?: Partial<MemberLook>;
+  label?: boolean;
+}) {
+  const resolved = resolveLook(member.id, look);
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return <DrawnPortrait member={member} look={resolved} label={label} />;
+  }
+
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-black">
+      <img
+        src={memberPhoto(member.id)}
+        alt={`${member.name} portrait`}
+        className="h-full w-full object-cover"
+        style={{ filter: lookFilter(resolved) }}
+        onError={() => setFailed(true)}
+      />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `linear-gradient(180deg, transparent 48%, color-mix(in oklab, ${member.color} 55%, #050308) 100%)`,
+        }}
+      />
+      {label ? (
+        <p className="font-display absolute bottom-2 left-3 text-sm tracking-[0.18em] text-white">
+          {member.name.toUpperCase()}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function lookFilter(look: MemberLook): string {
+  const hair = look.hairColor.toLowerCase();
+  const tint =
+    hair.includes("ff") || hair.includes("7ad") || hair.includes("6f8")
+      ? "saturate(1.25) hue-rotate(8deg)"
+      : "saturate(1.05)";
+  if (look.outfit === "award") return `${tint} brightness(1.06)`;
+  if (look.outfit === "mv") return `${tint} contrast(1.12)`;
+  if (look.outfit === "casual") return `${tint} saturate(0.92)`;
+  if (look.style === "futuristic") return `${tint} contrast(1.08)`;
+  return tint;
+}
 
 const skins: Record<string, string> = {
   nova: "#f1c7ae",
@@ -19,19 +78,17 @@ const skins: Record<string, string> = {
   sol: "#f3c8ae",
 };
 
-export function CharacterPortrait({
+function DrawnPortrait({
   member,
   look,
-  label = true,
+  label,
 }: {
   member: Member;
-  look?: Partial<MemberLook>;
-  label?: boolean;
+  look: MemberLook;
+  label: boolean;
 }) {
-  const resolved = resolveLook(member.id, look);
   const skin = skins[member.id] ?? "#efc3ad";
-  const uid = `${member.id}-${resolved.hair}-${resolved.outfit}-${resolved.style}`;
-
+  const uid = `${member.id}-${look.hair}-${look.outfit}-${look.style}`;
   return (
     <svg viewBox="0 0 200 260" className="h-full w-full" role="img" aria-label={`${member.name} portrait`}>
       <defs>
@@ -41,13 +98,13 @@ export function CharacterPortrait({
         </linearGradient>
       </defs>
       <rect width="200" height="260" rx="18" fill={`url(#${uid}-bg)`} />
-      <StyleFx style={resolved.style} color={member.color} />
-      <Hair cut={resolved.hair} color={resolved.hairColor} />
+      <StyleFx style={look.style} color={member.color} />
+      <Hair cut={look.hair} color={look.hairColor} />
       <ellipse cx="100" cy="112" rx="34" ry="40" fill={skin} />
       <ellipse cx="88" cy="110" rx="3.4" ry="4.2" fill="#1b1320" />
       <ellipse cx="112" cy="110" rx="3.4" ry="4.2" fill="#1b1320" />
       <path d="M90 126c6 7 14 7 20 0" fill="none" stroke="#b56b6b" strokeWidth="2" strokeLinecap="round" />
-      <Outfit outfit={resolved.outfit} color={member.color} />
+      <Outfit outfit={look.outfit} color={member.color} />
       {label ? (
         <text x="16" y="244" fill="white" fontSize="12" fontFamily="Syne, sans-serif" letterSpacing="2.2">
           {member.name.toUpperCase()}
@@ -58,9 +115,7 @@ export function CharacterPortrait({
 }
 
 function StyleFx({ style, color }: { style: StageStyle; color: string }) {
-  if (style === "street") {
-    return <path d="M0 40h200l-40 220H0z" fill={color} opacity="0.18" />;
-  }
+  if (style === "street") return <path d="M0 40h200l-40 220H0z" fill={color} opacity="0.18" />;
   if (style === "futuristic") {
     return (
       <>
@@ -69,9 +124,7 @@ function StyleFx({ style, color }: { style: StageStyle; color: string }) {
       </>
     );
   }
-  if (style === "retro") {
-    return <rect width="200" height="260" fill="white" opacity="0.06" />;
-  }
+  if (style === "retro") return <rect width="200" height="260" fill="white" opacity="0.06" />;
   return <circle cx="150" cy="36" r="30" fill="white" opacity="0.14" />;
 }
 
@@ -84,12 +137,8 @@ function Outfit({ outfit, color }: { outfit: OutfitLook; color: string }) {
       </>
     );
   }
-  if (outfit === "mv") {
-    return <path d="M62 158h76l-8 70H70z" fill={color} />;
-  }
-  if (outfit === "casual") {
-    return <rect x="74" y="152" width="52" height="66" rx="16" fill="#d9d2e8" />;
-  }
+  if (outfit === "mv") return <path d="M62 158h76l-8 70H70z" fill={color} />;
+  if (outfit === "casual") return <rect x="74" y="152" width="52" height="66" rx="16" fill="#d9d2e8" />;
   return (
     <>
       <rect x="76" y="150" width="48" height="68" rx="12" fill={color} />

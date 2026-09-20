@@ -2,6 +2,7 @@ import type { Group } from "../../types/group";
 import type { Member } from "../../types/member";
 import type { MemberLook } from "../../types/look";
 import { CharacterPortrait } from "./CharacterPortrait";
+import { assetUrl } from "../../lib/utils";
 
 export function PerformanceStage({
   group,
@@ -19,7 +20,9 @@ export function PerformanceStage({
   const lights = lightColors(group);
   return (
     <section className="overflow-hidden rounded-[2rem] border border-white/10">
-      <div className="relative min-h-[320px] bg-black">
+      <div className="relative min-h-[360px] bg-black">
+        <img src={assetUrl("concerts/venue-arena.jpg")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50" />
+        <img src={assetUrl("concerts/crowd.jpg")} alt="" className="absolute inset-x-0 bottom-0 h-1/3 w-full object-cover opacity-70" />
         <div
           className="absolute inset-x-8 top-6 h-16 rounded-full opacity-70"
           style={{
@@ -36,11 +39,11 @@ export function PerformanceStage({
             style={{ left: `${18 + index * 22}%`, background: light, opacity: 0.45 }}
           />
         ))}
-        <div className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-3 px-6 pb-8">
+        <div className="absolute inset-x-0 bottom-10 flex items-end justify-center gap-3 px-6">
           {members.map((member, index) => (
             <div
               key={member.id}
-              className="w-16 overflow-hidden rounded-2xl border transition sm:w-20"
+              className="w-16 overflow-hidden rounded-2xl border transition sm:w-24"
               style={{
                 borderColor: member.id === activeId ? member.color : "transparent",
                 transform: playing ? `translateY(${index % 2 === 0 ? -10 : 6}px)` : undefined,

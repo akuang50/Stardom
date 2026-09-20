@@ -58,7 +58,8 @@ body {
   color: #fff;
 }
 
-.theme-pastel input:not([type="range"]):not([type="color"]) {
+.theme-pastel input:not([type="range"]):not([type="color"]),
+.theme-pastel select {
   background: #fff;
   color: var(--theme-mist, #4a3350);
 }

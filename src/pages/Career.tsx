@@ -33,6 +33,9 @@ export function Career() {
           <p className="mt-3 max-w-2xl text-mist/70">
             A visual timeline of debuts, wins, and tours. Advance the calendar — everything stays in this browser.
           </p>
+          <Link to="/concert" className="mt-4 inline-block rounded-full bg-white px-5 py-3 font-semibold text-ink">
+            Hold a concert
+          </Link>
         </header>
         <CareerTimeline week={week} fans={fans} money={money} log={careerLog} onAdvance={advanceWeek} />
       </div>

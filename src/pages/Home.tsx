@@ -5,6 +5,7 @@ import { AlbumArt } from "../components/Shared/AlbumArt";
 import { CharacterPortrait } from "../components/Shared/CharacterPortrait";
 import { GroupLogo } from "../components/Shared/GroupLogo";
 import { charactersById, neonixMemberIds } from "../data/characters";
+import { assetUrl } from "../lib/utils";
 import { resolveLook } from "../types/look";
 import { useGameStore } from "../store/gameStore";
 
@@ -50,7 +51,7 @@ export function Home() {
             <span className="text-[var(--theme-accent)]">DOM</span>
           </motion.h1>
           <p className="mt-6 max-w-xl text-lg text-mist/75">
-            A cinematic studio for original groups, eras, songs, and stages. If you create it, you see it.
+            A cinematic studio for original groups, eras, songs, concerts, and stages. If you create it, you see it.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -102,7 +103,10 @@ export function Home() {
             <GroupLogo group={featured} size={72} />
           </div>
           <div className="mt-4 overflow-hidden rounded-[1.6rem]">
-            <AlbumArt song={{ title: "AFTERGLOW", concept: featured.concept }} group={featured} className="h-56 w-full" />
+            <img src={assetUrl("concerts/group-stage.jpg")} alt={`${featured.name} on stage`} className="h-56 w-full object-cover" />
+          </div>
+          <div className="mt-3 overflow-hidden rounded-[1.2rem]">
+            <AlbumArt song={{ title: "AFTERGLOW", concept: featured.concept }} group={featured} className="h-28 w-full" />
           </div>
           <div className="mt-4 grid grid-cols-5 gap-2">
             {lineup.map((id) => {

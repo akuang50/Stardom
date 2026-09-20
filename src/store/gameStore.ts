@@ -6,12 +6,14 @@ import { parseDirectorCommand } from "../ai/parser";
 import { createGroupDraft, resolveMembers } from "../engine/gameEngine";
 import { remixFromExplore, visualForConcept } from "../engine/remixEngine";
 import { simulateRelease, simulateWeek } from "../engine/careerEngine";
+import { simulateConcert } from "../engine/concertEngine";
 import { createSong, evenLines, setMemberShare } from "../engine/musicEngine";
 import type { GameSnapshot } from "../types/game";
 import type { Group } from "../types/group";
 import type { Song } from "../types/song";
 import type { MemberLook } from "../types/look";
 import { resolveLook } from "../types/look";
+import type { ConcertRecord } from "../types/concert";
 
 const emptyState: GameSnapshot = {
   group: null,
@@ -27,6 +29,7 @@ const emptyState: GameSnapshot = {
   },
   demoMode: false,
   looks: {},
+  concerts: [],
 };
 
 interface GameStore extends GameSnapshot {
@@ -37,6 +40,7 @@ interface GameStore extends GameSnapshot {
   updateSong: (songId: string, patch: Partial<Song>) => void;
   setLineShare: (songId: string, memberId: string, share: number) => void;
   releaseSong: (songId: string) => void;
+  holdConcert: (venueId: string, songId?: string) => ConcertRecord | string;
   advanceWeek: () => void;
   remix: (exploreId: string) => void;
   applyDirector: (prompt: string) => string;
@@ -72,6 +76,7 @@ export const useGameStore = create<GameStore>()(
               moneyDelta: 0,
             },
           ],
+          concerts: [],
           demoMode: false,
         });
       },
@@ -129,6 +134,38 @@ export const useGameStore = create<GameStore>()(
           group: state.group ? { ...state.group, debuted: true } : state.group,
           careerLog: [result.entry, ...state.careerLog],
         });
+      },
+
+      holdConcert: (venueId, songId) => {
+        const state = get();
+        const song = state.songs.find((item) => item.id === songId) ?? state.songs.at(-1);
+        const result = simulateConcert({
+          venueId,
+          song,
+          members: resolveMembers(state.memberIds),
+          week: state.week,
+          fans: state.fans,
+          money: state.money,
+        });
+        if ("error" in result) return result.error;
+        set({
+          concerts: [result.concert, ...state.concerts],
+          fans: result.fans,
+          money: result.money,
+          week: state.week + 1,
+          careerLog: [
+            {
+              id: result.concert.id,
+              week: state.week,
+              title: result.concert.soldOut ? "Sold-out concert" : "Concert night",
+              description: `${result.concert.songTitle} live at ${result.concert.attendance.toLocaleString()} / ${result.concert.capacity.toLocaleString()}.`,
+              fansDelta: result.concert.fansDelta,
+              moneyDelta: result.concert.moneyDelta,
+            },
+            ...state.careerLog,
+          ],
+        });
+        return result.concert;
       },
 
       advanceWeek: () => {
@@ -238,6 +275,19 @@ export const useGameStore = create<GameStore>()(
           money: released.money + 64_000,
           fans: released.fans + 42_000,
           demoMode: true,
+          concerts: [
+            {
+              id: "demo-show",
+              venueId: "showcase",
+              songTitle: "NEON HEART",
+              week: 8,
+              attendance: 800,
+              capacity: 800,
+              soldOut: true,
+              fansDelta: 22000,
+              moneyDelta: 18000,
+            },
+          ],
           careerLog: [
             {
               id: "demo-tour",
@@ -285,9 +335,13 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: "stardom-save",
-      version: 3,
+      version: 4,
       migrate: (persisted) => {
-        const state = persisted as { group?: Record<string, unknown>; looks?: Record<string, MemberLook> };
+        const state = persisted as {
+          group?: Record<string, unknown>;
+          looks?: Record<string, MemberLook>;
+          concerts?: ConcertRecord[];
+        };
         if (state.group) {
           state.group.paletteId ??= "ink-pink";
           state.group.eraName ??= "DEBUT ERA";
@@ -299,6 +353,7 @@ export const useGameStore = create<GameStore>()(
           state.group.led ??= "grid";
         }
         state.looks ??= {};
+        state.concerts ??= [];
         return persisted;
       },
       partialize: (state) => ({
@@ -312,6 +367,7 @@ export const useGameStore = create<GameStore>()(
         settings: state.settings,
         demoMode: state.demoMode,
         looks: state.looks,
+        concerts: state.concerts,
       }),
     },
   ),

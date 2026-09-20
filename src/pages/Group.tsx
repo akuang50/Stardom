@@ -4,13 +4,14 @@ import { LogoStudio } from "../components/GroupCreator/LogoStudio";
 import { PalettePicker } from "../components/GroupCreator/PalettePicker";
 import { DirectorPanel } from "../components/Shared/DirectorPanel";
 import { AlbumArt } from "../components/Shared/AlbumArt";
+import { CharacterPortrait } from "../components/Shared/CharacterPortrait";
 import { GroupLogo } from "../components/Shared/GroupLogo";
 import { Lightstick } from "../components/Shared/Lightstick";
 import { Photocard } from "../components/Shared/Photocard";
 import { StageDesigner } from "../components/Shared/StageDesigner";
 import { chemistryBonus, roleBalanceLabel } from "../engine/chemistryEngine";
 import { resolveMembers } from "../engine/gameEngine";
-import { formatMoney, formatNumber } from "../lib/utils";
+import { assetUrl, formatMoney, formatNumber } from "../lib/utils";
 import type { LightstickShape } from "../types/look";
 import { resolveLook } from "../types/look";
 import { useGameStore } from "../store/gameStore";
@@ -41,11 +42,10 @@ export function Group() {
 
   return (
     <div className="grid gap-10">
-      <header
-        className="relative overflow-hidden rounded-[2rem] border border-white/10 p-8"
-        style={{ background: `linear-gradient(135deg, ${group.color}55, #07040f 62%)` }}
-      >
-        <div className="flex flex-wrap items-end justify-between gap-6">
+      <header className="relative overflow-hidden rounded-[2rem] border border-white/10 p-8">
+        <img src={assetUrl("concerts/group-stage.jpg")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${group.color}88, #07040f 72%)` }} />
+        <div className="relative flex flex-wrap items-end justify-between gap-6">
           <div>
             {demoMode ? (
               <p className="text-xs uppercase tracking-[0.22em] text-gold">Demo Mode · NEONIX</p>
@@ -60,8 +60,11 @@ export function Group() {
           </div>
           <GroupLogo group={group} size={132} />
         </div>
-        <div className="mt-6 flex flex-wrap gap-2">
-          <Link to="/song" className="rounded-full bg-white px-5 py-3 font-semibold text-ink">
+        <div className="relative mt-6 flex flex-wrap gap-2">
+          <Link to="/concert" className="rounded-full bg-white px-5 py-3 font-semibold text-ink">
+            Hold concert
+          </Link>
+          <Link to="/song" className="rounded-full border border-white/30 px-5 py-3 font-semibold text-white">
             Song studio
           </Link>
           <Link to="/career" className="rounded-full px-5 py-3 font-semibold text-white" style={{ background: group.color }}>
@@ -105,6 +108,16 @@ export function Group() {
           value={group.paletteId}
           onChange={(palette) => updateGroup({ paletteId: palette.id, color: palette.accent })}
         />
+      </section>
+      <section>
+        <h2 className="font-display text-2xl font-bold">Lineup</h2>
+        <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+          {members.map((member) => (
+            <div key={member.id} className="h-40 w-28 shrink-0 overflow-hidden rounded-2xl">
+              <CharacterPortrait member={member} look={looks[member.id] ?? resolveLook(member.id)} label={false} />
+            </div>
+          ))}
+        </div>
       </section>
       <section>
         <h2 className="font-display text-2xl font-bold">Photocards</h2>

@@ -1,6 +1,8 @@
 import type { Group } from "./group";
 import type { Member } from "./member";
 import type { Song } from "./song";
+import type { MemberLook } from "./look";
+import type { ConcertRecord } from "./concert";
 
 export interface CareerLogEntry {
   id: string;
@@ -16,8 +18,6 @@ export interface GameSettings {
   directorOffline: boolean;
 }
 
-import type { MemberLook } from "./look";
-
 export interface GameSnapshot {
   group: Group | null;
   memberIds: string[];
@@ -29,6 +29,7 @@ export interface GameSnapshot {
   settings: GameSettings;
   demoMode: boolean;
   looks: Record<string, MemberLook>;
+  concerts: ConcertRecord[];
 }
 
 export type { Group, Member, Song };

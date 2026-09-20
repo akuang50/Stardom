@@ -14,6 +14,7 @@ const links = [
   { to: "/create", label: "Create" },
   { to: "/group", label: "Group" },
   { to: "/song", label: "Studio" },
+  { to: "/concert", label: "Concert" },
   { to: "/career", label: "Career" },
   { to: "/explore", label: "Explore" },
 ];
